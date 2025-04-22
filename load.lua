@@ -31,7 +31,7 @@ end
 
 local function playSound(parent)
 	local sound = Instance.new("Sound")
-	sound.SoundId = soundId
+	sound.SoundId = 5419098673
 	sound.Volume = 0.7
 	sound.PlayOnRemove = true
 	sound.Parent = parent
