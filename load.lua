@@ -13,7 +13,7 @@ local tweenService = game:GetService("TweenService")
 local lighting = game:GetService("Lighting")
 
 local useStudio = runService:IsStudio()
-local soundId = "rbxassetid://5419098673"
+local soundId = "rbxassetid://6026984224"
 local guiAssetId = "rbxassetid://97206084643256" -- make sure this model is public!
 
 local function tween(inst, time, props, easing, direction)
