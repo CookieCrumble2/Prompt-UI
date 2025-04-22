@@ -1,11 +1,9 @@
 --[[
-
 	Prompt Interface Suite
 	by Sirius
 
 	shlex | Designing + Programming
-    CookieCrumble | Forked UI
-
+	CookieCrumble | Forked UI
 ]]
 
 local PromptUI = {}
@@ -15,7 +13,8 @@ local tweenService = game:GetService("TweenService")
 local lighting = game:GetService("Lighting")
 
 local useStudio = runService:IsStudio()
-local soundId = "rbxassetid://9118823104"
+local soundId = "rbxassetid://5419098673"
+local guiAssetId = "rbxassetid://97206084643256" -- make sure this model is public!
 
 local function tween(inst, time, props, easing, direction)
 	tweenService:Create(inst, TweenInfo.new(time or 0.4, easing or Enum.EasingStyle.Exponential, direction or Enum.EasingDirection.Out), props):Play()
@@ -26,12 +25,14 @@ local function fadeBlur(on)
 	blur.Name = "PromptUIBlur"
 	blur.Size = on and 0 or 20
 	tween(blur, 0.4, {Size = on and 20 or 0})
-	if not on then task.delay(0.5, function() blur:Destroy() end) end
+	if not on then
+		task.delay(0.5, function() blur:Destroy() end)
+	end
 end
 
 local function playSound(parent)
 	local sound = Instance.new("Sound")
-	sound.SoundId = 5419098673
+	sound.SoundId = soundId
 	sound.Volume = 0.7
 	sound.PlayOnRemove = true
 	sound.Parent = parent
@@ -42,17 +43,20 @@ function PromptUI.Show(data)
 	assert(data.Title and data.Description, "Missing Title or Description")
 	assert(data.Options and type(data.Options) == "table", "Options must be a table")
 
-	local gui = useStudio and script.Parent:FindFirstChild("Prompt") or game:GetObjects("rbxassetid://97206084643256")[1]
+	local gui = useStudio and script.Parent:FindFirstChild("Prompt") or game:GetObjects(guiAssetId)[1]
 	gui.Enabled = false
 
 	local parent
-	if gethui then parent = gethui()
+	if gethui then
+		parent = gethui()
 	elseif syn and syn.protect_gui then
 		syn.protect_gui(gui)
 		parent = coreGui
 	elseif coreGui:FindFirstChild("RobloxGui") then
 		parent = coreGui.RobloxGui
-	else parent = coreGui end
+	else
+		parent = coreGui
+	end
 
 	gui.Parent = parent
 	gui.Enabled = true
@@ -61,11 +65,16 @@ function PromptUI.Show(data)
 	local primaryBtn = policy.Actions.Primary
 	local secondaryBtns = {policy.Actions.Secondary, policy.Actions:FindFirstChild("Tertiary")}
 
+	local connections = {}
+
 	local function resetButton(btn)
 		if btn then
 			btn.Visible = false
 			btn.Title.Text = ""
-			btn.Interact.MouseButton1Click:Disconnect()
+			if connections[btn] then
+				connections[btn]:Disconnect()
+				connections[btn] = nil
+			end
 		end
 	end
 
@@ -75,7 +84,6 @@ function PromptUI.Show(data)
 	policy.Title.Text = data.Title
 	policy.Notice.Text = data.Description
 
-	-- Set icon
 	if data.Icon and policy:FindFirstChild("Icon") then
 		local icon = policy.Icon
 		icon.Image = "rbxassetid://" .. tostring(data.Icon)
@@ -83,7 +91,6 @@ function PromptUI.Show(data)
 		tween(icon, 0.4, {ImageTransparency = 0})
 	end
 
-	-- Setup buttons
 	local options = data.Options
 	local btnRefs = {primaryBtn, unpack(secondaryBtns)}
 	for i, option in ipairs(options) do
@@ -91,7 +98,7 @@ function PromptUI.Show(data)
 			local btn = btnRefs[i]
 			btn.Visible = true
 			btn.Title.Text = option.Text
-			btn.Interact.MouseButton1Click:Connect(function()
+			connections[btn] = btn.Interact.MouseButton1Click:Connect(function()
 				tween(policy, 0.3, {BackgroundTransparency = 1})
 				fadeBlur(false)
 				task.delay(0.3, function()
@@ -102,13 +109,13 @@ function PromptUI.Show(data)
 		end
 	end
 
-	-- Animation
 	policy.BackgroundTransparency = 1
 	policy.Size = UDim2.new(0, 450, 0, 120)
 
-	local scale = Instance.new("UIScale", policy)
+	local scale = Instance.new("UIScale")
 	scale.Name = "PopupScale"
 	scale.Scale = 0.8
+	scale.Parent = policy
 	tween(scale, 0.35, {Scale = 1}, Enum.EasingStyle.Back)
 
 	tween(policy, 0.4, {BackgroundTransparency = 0})
