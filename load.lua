@@ -127,18 +127,19 @@ function PromptUI.Show(data)
 
 	fadeBlur(true)
 	playSound(gui)
-	local watermark = Instance.new("TextLabel")
-	watermark.Name = "Watermark"
-	watermark.Text = "WhoisCookie"
-	watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
-	watermark.BackgroundTransparency = 1
-	watermark.Font = Enum.Font.GothamSemibold
-	watermark.TextSize = 14
-	watermark.Size = UDim2.new(0, 200, 0, 20)
-	watermark.Position = UDim2.new(0, 10, 1, -30)
-	watermark.AnchorPoint = Vector2.new(0, 1)
-	watermark.ZIndex = 1000
-	watermark.Parent = gui
+	-- Watermark: "WhoisCookie"
+local watermark = Instance.new("TextLabel")
+watermark.Name = "Watermark"
+watermark.Text = "WhoisCookie"
+watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
+watermark.BackgroundTransparency = 1
+watermark.Font = Enum.Font.GothamSemibold
+watermark.TextSize = 14
+watermark.Size = UDim2.new(0, 150, 0, 20)
+watermark.Position = UDim2.new(0, 10, 1, -30) -- bottom left corner
+watermark.AnchorPoint = Vector2.new(0, 1) -- anchor bottom left
+watermark.ZIndex = 9999
+watermark.Parent = gui:FindFirstChildWhichIsA("ScreenGui") or gui
 
 	return gui
 end
