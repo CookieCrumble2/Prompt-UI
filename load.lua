@@ -83,6 +83,8 @@ function PromptUI.Show(data)
 
 	policy.Title.Text = data.Title
 	policy.Notice.Text = data.Description
+	policy.Notice.TextSize = 20 -- make description text bigger
+	policy.Notice.TextWrapped = true
 
 	if data.Icon and policy:FindFirstChild("Icon") then
 		local icon = policy.Icon
@@ -99,9 +101,11 @@ function PromptUI.Show(data)
 			btn.Visible = true
 			btn.Title.Text = option.Text
 			connections[btn] = btn.Interact.MouseButton1Click:Connect(function()
-				tween(policy, 0.3, {BackgroundTransparency = 1})
+				tween(policy, 0.5, {BackgroundTransparency = 1})
+				tween(policy.Title, 0.3, {TextTransparency = 1})
+				tween(policy.Notice, 0.3, {TextTransparency = 1})
 				fadeBlur(false)
-				task.delay(0.3, function()
+				task.delay(0.5, function()
 					gui:Destroy()
 					if option.Callback then option.Callback() end
 				end)
@@ -123,6 +127,18 @@ function PromptUI.Show(data)
 
 	fadeBlur(true)
 	playSound(gui)
+	local watermark = Instance.new("TextLabel")
+	watermark.Name = "Watermark"
+	watermark.Text = "WhoisCookie"
+	watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
+	watermark.BackgroundTransparency = 1
+	watermark.Font = Enum.Font.GothamSemibold
+	watermark.TextSize = 14
+	watermark.Size = UDim2.new(0, 200, 0, 20)
+	watermark.Position = UDim2.new(0, 10, 1, -30)
+	watermark.AnchorPoint = Vector2.new(0, 1)
+	watermark.ZIndex = 1000
+	watermark.Parent = gui
 
 	return gui
 end
