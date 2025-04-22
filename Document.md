@@ -11,17 +11,16 @@ local PromptInterface = loadstring(game:HttpGet("https://raw.githubusercontent.c
 
 ## Editing the UI
 ```lua
-PromptInterface.create(
-    "Welcome to Prompt UI", -- Title
-    "This is a demo prompt using the Sirous Prompt Interface.", -- Description
-    "Accept", -- Primary Button Text
-    "Cancel", -- Secondary Button Text
-    function(response)
-        if response then
-        -- Add loadstring or script
-        else
-        -- Add Loadstring or script
-        end
-    end
+local Main = {
+    Title = "Insert Tittle",
+    Description = "Description",
+    Options = {
+        {Text = "Yes", Callback = function() print("confirmed") end},
+        {Text = "No", Callback = function() print("Cancelled") end},
+    };
+    Icon = "1234567890" -- optional
+}
+
+PromptUI.Show(Main)
 )
 ```
