@@ -4,7 +4,7 @@ This documentation is for the stable release of Prompt UI.
 
 ## Initializing the UI
 ```lua
-local PromptInterface = loadstring(game:HttpGet("https://raw.githubusercontent.com/CookieCrumble2/Prompt-UI/refs/heads/main/load.lua"))()
+local PromptInterface = loadstring(game:HttpGet("https://raw.githubusercontent.com/CookieCrumble2/Prompt-UI/main/load.lua"))()
 ```
 
 
