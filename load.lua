@@ -11,9 +11,10 @@ local runService = game:GetService("RunService")
 local coreGui = game:GetService("CoreGui")
 local tweenService = game:GetService("TweenService")
 local lighting = game:GetService("Lighting")
+local userInputService = game:GetService("UserInputService")
 
 local useStudio = runService:IsStudio()
-local soundId = "rbxassetid://6026984224"
+local soundId = "rbxassetid://9118823104" -- working popup sound
 local guiAssetId = "rbxassetid://97206084643256" -- make sure this model is public!
 
 local function tween(inst, time, props, easing, direction)
@@ -37,6 +38,28 @@ local function playSound(parent)
 	sound.PlayOnRemove = true
 	sound.Parent = parent
 	sound:Destroy()
+end
+
+local function createWatermark(parent)
+	local watermark = Instance.new("TextLabel")
+	watermark.Name = "Watermark"
+	watermark.Text = "WhoisCookie"
+	watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
+	watermark.TextStrokeTransparency = 0.5
+	watermark.TextStrokeColor3 = Color3.new(0, 0, 0)
+	watermark.BackgroundTransparency = 1
+	watermark.Font = Enum.Font.GothamBold
+	watermark.TextSize = 14
+	watermark.Size = UDim2.new(0, 160, 0, 20)
+	watermark.Position = UDim2.new(0, 10, 1, -10)
+	watermark.AnchorPoint = Vector2.new(0, 1)
+	watermark.TextTransparency = 1
+	watermark.ZIndex = 9999
+	watermark.Parent = parent
+
+	tween(watermark, 0.8, {TextTransparency = 0}, Enum.EasingStyle.Quad)
+
+	return watermark
 end
 
 function PromptUI.Show(data)
@@ -64,7 +87,6 @@ function PromptUI.Show(data)
 	local policy = gui.Policy
 	local primaryBtn = policy.Actions.Primary
 	local secondaryBtns = {policy.Actions.Secondary, policy.Actions:FindFirstChild("Tertiary")}
-
 	local connections = {}
 
 	local function resetButton(btn)
@@ -83,8 +105,7 @@ function PromptUI.Show(data)
 
 	policy.Title.Text = data.Title
 	policy.Notice.Text = data.Description
-	policy.Notice.TextSize = 20 -- make description text bigger
-	policy.Notice.TextWrapped = true
+	policy.Notice.TextSize = 18 -- Bigger description text
 
 	if data.Icon and policy:FindFirstChild("Icon") then
 		local icon = policy.Icon
@@ -101,13 +122,16 @@ function PromptUI.Show(data)
 			btn.Visible = true
 			btn.Title.Text = option.Text
 			connections[btn] = btn.Interact.MouseButton1Click:Connect(function()
-				tween(policy, 0.5, {BackgroundTransparency = 1})
-				tween(policy.Title, 0.3, {TextTransparency = 1})
-				tween(policy.Notice, 0.3, {TextTransparency = 1})
+				tween(policy, 0.3, {BackgroundTransparency = 1})
+				tween(policy, 0.3, {Size = UDim2.new(0, 450, 0, 120)})
 				fadeBlur(false)
-				task.delay(0.5, function()
-					gui:Destroy()
-					if option.Callback then option.Callback() end
+				gui.Enabled = false -- hide instantly for smoother transition
+
+				task.delay(0.35, function()
+					coroutine.wrap(function()
+						gui:Destroy()
+						if option.Callback then pcall(option.Callback) end
+					end)()
 				end)
 			end)
 		end
@@ -127,19 +151,7 @@ function PromptUI.Show(data)
 
 	fadeBlur(true)
 	playSound(gui)
-	-- Watermark: "WhoisCookie"
-local watermark = Instance.new("TextLabel")
-watermark.Name = "Watermark"
-watermark.Text = "WhoisCookie"
-watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
-watermark.BackgroundTransparency = 1
-watermark.Font = Enum.Font.GothamSemibold
-watermark.TextSize = 14
-watermark.Size = UDim2.new(0, 150, 0, 20)
-watermark.Position = UDim2.new(0, 10, 1, -30) -- bottom left corner
-watermark.AnchorPoint = Vector2.new(0, 1) -- anchor bottom left
-watermark.ZIndex = 9999
-watermark.Parent = gui:FindFirstChildWhichIsA("ScreenGui") or gui
+	createWatermark(gui:FindFirstChildWhichIsA("ScreenGui") or gui)
 
 	return gui
 end
