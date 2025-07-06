@@ -26,3 +26,8 @@ PromptInterface.create(
     end
 )
 ```
+ ## Credits
+ - Lucide Icons
+   **https://lucide.dev**
+- Sirius
+  **https://sirius.menu**
